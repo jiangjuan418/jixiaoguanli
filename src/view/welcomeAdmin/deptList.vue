@@ -7,15 +7,15 @@
     </el-col>
   </el-row>
   <el-row>
-    <el-table :data="deptData.slice((current-1)*size,current*size)" style="width: 100%" stripe highlight-current-row :header-cell-style="{
+    <el-table :data="deptData.slice((current-1)*size,current*size)" style="width: 100%;" height="550" stripe highlight-current-row :header-cell-style="{
                 'background-color': '#f0f8ff',
-                'height': '35px',
+                'height': '40px',
                 'padding':'0',
                 'border': 'none',
                 'font-size':'0.9vw',
                 'color':'#666666',
                 'text-align':'center'
-            }" :cell-style="{padding:'0px',height: '25px','text-align':'center'} ">
+            }" :cell-style="{padding:'0px',height: '50px','text-align':'center'} ">
       <el-table-column prop="dept_id" label="部门编号" width="100"></el-table-column>
       <el-table-column prop="dept_name" label="部门名称" width="120"></el-table-column>
       <el-table-column prop="dept_leader" label="部门主管" width="120">
@@ -40,9 +40,16 @@
           {{ scope.row.address || '暂无' }}
         </template>
       </el-table-column>
-      <el-table-column prop="describe" label="描述" width="300">
+      <el-table-column prop="describe" label="描述" width="180">
         <template slot-scope="scope">
-          {{ scope.row.describe || '暂无' }}
+          <el-popover
+            placement="left"
+            width="200"
+            trigger="click"
+          >
+            <p>{{ scope.row.describe || '暂无' }}</p>
+            <p slot="reference" style="color: red">点击查看该部门的简介</p>
+          </el-popover>
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作">
@@ -50,11 +57,14 @@
           <i class="el-icon-delete" @click="delDept(scope.row.dept_id,scope.row.dept_leader_id)"></i>
           &nbsp;
           <i class="el-icon-edit" @click="editDept(scope.row)"></i>
-<!--          <el-button type="text" size="mini" @click="delDept(scope.row.dept_id)">删除</el-button>-->
-<!--          <el-button type="text" size="mini" @click="editDept(scope.row.dept_id)">修改</el-button>-->
-<!--          <el-button type="text" size="mini" @click="saveDept(scope.row.dept_id)">保存</el-button>-->
         </template>
       </el-table-column>
+      <template slot="empty">
+        <el-empty :image-size="60"></el-empty>
+<!--        一般我们要想在元素节点的属性上绑定vue的data数据-->
+<!--        是不可以直接使用{{ }}插入值语法来使用,所以如果我们想让dom属性节点与data数据绑定响应
+就需要使用 v-bind 指令，v-bind:可简写成:-->
+      </template>
     </el-table>
   </el-row>
   <el-row :span='24'><div class="pagination">
@@ -173,6 +183,14 @@ import {Message} from 'element-ui'
 export default {
   name: 'deptList',
   data () {
+    // const validateEmail = (rule, value, callback) => {
+    //   rule = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
+    //   if (rule.test(value)) {
+    //     callback()
+    //   } else {
+    //     callback(new Error('邮箱格式不正确！'))
+    //   }
+    // }
     return {
       add_dept_name: '',
       // selectedDept: '',
@@ -245,9 +263,9 @@ export default {
         delDept(qs.stringify(params)).then(res => {
           if (res.data.code === 200) {
             this.loadData()
-            alert(res.data.message)
+            Message.success(res.data.message)
           } else {
-            alert(res.data.message)
+            Message.error(res.data.message)
           }
         }).catch(function (error) { console.log('delDept error') })
       })
@@ -295,13 +313,12 @@ export default {
         }
         addDept(qs.stringify(params)).then(res => {
           if (res.data.code === 200) {
-            alert(res.data.message)
-            this.dialogFormVisible = false
+            Message.success(res.data.message)
             this.loadData()
           } else {
-            alert(res.data.message)
-            this.dialogFormVisible = false
+            Message.error(res.data.message)
           }
+          this.dialogFormVisible = false
         }).catch(function (error) { console.log('addDept error') })
       }
     },
@@ -326,10 +343,11 @@ export default {
           }
           editDept(qs.stringify(params)).then(res => {
             if (res.data.code === 200) {
-              alert(res.data.message)
+              Message.success(res.data.message)
+              // alert(res.data.message)
               this.loadData()
             } else {
-              alert(res.data.message)
+              Message.error(res.data.message)
             }
             this.dialogFormVisible1 = false
           }).catch(function (error) { console.log('addDept error') })

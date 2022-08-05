@@ -176,14 +176,15 @@ export default{
   position: fixed;
   top: 30%;
   left: 30%;
-  border: 1px solid gray;
+  /*border: 1px solid lightblue;*/
+  box-shadow: 0px 0px 10px 6px rgba(0,0,0,0.3);
 }
  .title-container{
    background: url("../assets/top.png");
    background-size: 520px;
    height: 50px;
    line-height: 50px;
-   border-bottom: 1px solid #2c3e50;
+   /*border-bottom: 1px solid gray;*/
 }
 .login-form {
   padding: 20px;
@@ -223,6 +224,7 @@ export default{
   margin-bottom: 0px;
 }
  .login-container .title{
-
+   font-family: "Georgia", Tahoma, Sans-Serif;
+   font-weight: bold;
  }
 </style>

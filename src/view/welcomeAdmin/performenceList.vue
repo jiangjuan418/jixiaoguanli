@@ -74,19 +74,19 @@
       </el-col>
     </el-row>
     <el-row class="rank">
-      <div id="barChart" class="barChart" style="height: 500px;"></div>
+      <div id="barChart" class="barChart" style="height: 550px;"></div>
     </el-row>
     <el-dialog class="voteDetail" title="投票详情" :visible.sync="dialogFormVisible" :append-to-body="true" :show-close="false">
       <el-row>
         <el-table :data="voteData.slice((current-1)*size,current*size)" style="width: 100%" stripe highlight-current-row :header-cell-style="{
                 'background-color': '#f0f8ff',
-                'height': '35px',
+                'height': '40px',
                 'padding':'0',
                 'border': '1px solid #E2F0FAFF',
                 'font-size':'0.9vw',
                 'color':'#666666',
                 'text-align':'center'
-            }" :cell-style="{padding:'0px',height: '25px','text-align':'center'} ">
+            }" :cell-style="{padding:'0px',height: '50px','text-align':'center'} ">
           <el-table-column prop="dept_id" label="部门编号" v-if="false"></el-table-column>
           <el-table-column prop="realName" label="评分人"></el-table-column>
           <el-table-column label="评分项">
@@ -148,7 +148,6 @@ export default {
     let that = this
     that.barChartContainer = that.$echarts.init(document.getElementById('barChart'))
     that.barChartContainer.on('click', function (params) {
-      that.dialogFormVisible = true
       let param = {
         'dept_id': params.data.deptId,
         'data': (that.selectedSeason || ' ').slice(0, 4) + '-' + Number.parseInt((that.selectedSeason || ' ').slice(6, 7)) * 3 + '-' + '28'
@@ -159,9 +158,10 @@ export default {
           that.total = res.data.data.length
         }
       }).catch(function (error) { console.log('getVoteDetail error') })
+      that.dialogFormVisible = true
       // that.$router.push({path: '/welcomeAdmin/devoteDetail', query: {deptId: params.data.deptId}})
     }) // 柱状图绑定事件，点击查看绩效详情
-    that.getCurrentSeason() // 默认查看当前季度的排名
+    that.getCurrentSeason() // 刷新数据
   },
   methods: {
     handleSizeChange (val) {
@@ -273,7 +273,22 @@ export default {
             width: 200,
             align: 'left',
             overflow: 'truncate',
-            formatter: function (value, index) {
+            formatter: function (value, index) { // 处理文字过长换行显示的问题
+              let str = ''
+              const num = 9 // 每行显示字数
+              const valLength = value.length // 该项x轴字数
+              const rowNum = Math.ceil(valLength / num) // 行数
+              if (rowNum > 1) {
+                for (let i = 0; i < rowNum; i++) {
+                  let temp = ''
+                  const start = i * num
+                  const end = start + num
+
+                  temp = value.substring(start, end) + '\n'
+                  str += temp
+                }
+                value = str
+              }
               let ind = index + 1
               if (ind === ydata.length) {
                 return '{one|' + (ydata.length - index) + '} {a|' + value + '}'
@@ -384,7 +399,26 @@ export default {
             }
           },
           data: xdata
-        } ]
+        } ],
+        dataZoom: [
+          {
+            type: 'slider',
+            show: false,
+            yAxisIndex: [0],
+            left: '98%',
+            handleSize: 20,
+            // startValue: 0,
+            // endValue: 6,
+            // start: 0, // 数据窗口范围的起始百分比
+            // end: 36
+          },
+          {
+            type: 'inside',
+            yAxisIndex: [0],
+            start: 0,
+            end: 36
+          }
+        ]
       }
       this.barChartContainer.setOption(option)
     },

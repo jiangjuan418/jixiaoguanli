@@ -73,21 +73,24 @@
       <span>已投票详情</span>
     </el-col>
     <el-col class="table_title" :span="12">
-      <span>未投票列表</span>
+      <el-badge :value=total_1 class="item">
+        <span>未投票列表</span>
+      </el-badge>
+<!--      <span>未投票列表</span>-->
     </el-col>
   </el-row>
   <el-row>
     <el-col :span="14">
       <el-row>
-        <el-table :data="completedVote.slice((current-1)*size,current*size)" style="width: 100%" stripe highlight-current-row :header-cell-style="{
+        <el-table :data="completedVote.slice((current-1)*size,current*size)" height="550" style="width: 100%" stripe highlight-current-row :header-cell-style="{
                 'background-color': '#f0f8ff',
-                'height': '35px',
+                'height': '40px',
                 'padding':'0',
                 'border': '1px solid #E2F0FAFF',
                 'font-size':'0.9vw',
                 'color':'#666666',
                 'text-align':'center'
-            }" :cell-style="{padding:'0px',height: '25px','text-align':'center'} ">
+            }" :cell-style="{padding:'0px',height: '50px','text-align':'center'} ">
           <el-table-column prop="manager_id" label="经理id" v-if="false"></el-table-column>
           <el-table-column prop="user_id" label="评分人id" v-if="false"></el-table-column>
 <!--          <el-table-column prop="realName" label="评分人"></el-table-column>-->
@@ -99,6 +102,9 @@
             <el-table-column prop="grade" label="平均得分"></el-table-column>
           </el-table-column>
           <el-table-column prop="total_grade" label="综合得分" sortable></el-table-column>
+          <template slot="empty">
+            <el-empty :image-size="60"></el-empty>
+          </template>
         </el-table>
       </el-row>
       <el-row :span='24'><div class="pagination">
@@ -117,15 +123,15 @@
     </el-col>
     <el-col :span="8" style="margin-left: 10px">
       <el-row>
-        <el-table :data="incompleteVote.slice((current_1-1)*size_1,current_1*size_1)" style="width: 100%" stripe highlight-current-row :header-cell-style="{
+        <el-table :data="incompleteVote.slice((current_1-1)*size_1,current_1*size_1)" height="500" style="width: 100%" stripe highlight-current-row :header-cell-style="{
                 'background-color': '#f0f8ff',
-                'height': '35px',
+                'height': '40px',
                 'padding':'0',
                 'border': '1px solid #E2F0FAFF',
                 'font-size':'0.9vw',
                 'color':'#666666',
                 'text-align':'center'
-            }" :cell-style="{padding:'0px',height: '25px','text-align':'center'} ">
+            }" :cell-style="{padding:'0px',height: '50px','text-align':'center'} ">
           <el-table-column>
             <el-table-column prop="manager_id" label="经理id" v-if="false"></el-table-column>
 <!--            <el-table-column prop="user_id" label="评分人id" v-if="false"></el-table-column>-->
@@ -145,6 +151,9 @@
               </template>
             </el-table-column>
           </el-table-column>
+          <template slot="empty">
+            <el-empty :image-size="60"></el-empty>
+          </template>
         </el-table>
       </el-row>
       <el-row :span='24'><div class="pagination">
@@ -160,76 +169,63 @@
         >
         </el-pagination></div>
       </el-row>
-      <el-row>
-        <el-dialog class="addVote" title="投票" :visible.sync="dialogFormVisible" :append-to-body="true" :show-close="false">
-<!--          <el-row>-->
-<!--            <el-col :span="4">当前部门</el-col>-->
-<!--            <el-col :span="20">-->
-<!--              <el-input v-model="addVoteForm.deptName" disabled/>-->
-<!--            </el-col>-->
-<!--          </el-row>-->
-          <el-row>
-            <el-col :span="3">工作能力</el-col>
-            <el-col :span="21">
-              <el-radio-group v-model="addVoteForm.ability_1">
-                <el-radio :label="1">1分</el-radio>
-                <el-radio :label="2">2分</el-radio>
-                <el-radio :label="3">3分</el-radio>
-                <el-radio :label="4">4分</el-radio>
-                <el-radio :label="5">5分</el-radio>
-                <el-radio :label="6">6分</el-radio>
-                <el-radio :label="7">7分</el-radio>
-                <el-radio :label="8">8分</el-radio>
-                <el-radio :label="9">9分</el-radio>
-                <el-radio :label="10">10分</el-radio>
-              </el-radio-group>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="3">态度</el-col>
-            <el-col :span="21">
-              <el-radio-group v-model="addVoteForm.ability_2">
-                <el-radio :label="1">1分</el-radio>
-                <el-radio :label="2">2分</el-radio>
-                <el-radio :label="3">3分</el-radio>
-                <el-radio :label="4">4分</el-radio>
-                <el-radio :label="5">5分</el-radio>
-                <el-radio :label="6">6分</el-radio>
-                <el-radio :label="7">7分</el-radio>
-                <el-radio :label="8">8分</el-radio>
-                <el-radio :label="9">9分</el-radio>
-                <el-radio :label="10">10分</el-radio>
-              </el-radio-group>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="3">领导力</el-col>
-            <el-col :span="21">
-              <el-radio-group v-model="addVoteForm.ability_3">
-                <el-radio :label="1">1分</el-radio>
-                <el-radio :label="2">2分</el-radio>
-                <el-radio :label="3">3分</el-radio>
-                <el-radio :label="4">4分</el-radio>
-                <el-radio :label="5">5分</el-radio>
-                <el-radio :label="6">6分</el-radio>
-                <el-radio :label="7">7分</el-radio>
-                <el-radio :label="8">8分</el-radio>
-                <el-radio :label="9">9分</el-radio>
-                <el-radio :label="10">10分</el-radio>
-              </el-radio-group>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col><el-button type="primary" style="width:100%;" size="small" @click="addVote()">投票</el-button></el-col>
-          </el-row>
-        </el-dialog>
-      </el-row>
     </el-col>
   </el-row>
+  <el-dialog class="addVote" title="投票" :visible.sync="dialogFormVisible" :append-to-body="true" :show-close="false">
+    <!--          <el-row>-->
+    <!--            <el-col :span="4">当前部门</el-col>-->
+    <!--            <el-col :span="20">-->
+    <!--              <el-input v-model="addVoteForm.deptName" disabled/>-->
+    <!--            </el-col>-->
+    <!--          </el-row>-->
+    <el-row>
+      <el-col :span="3">工作能力</el-col>
+      <el-col :span="21">
+        <el-rate
+          v-model="addVoteForm.ability_1"
+          :icon-classes="iconClasses"
+          :max="10"
+          show-score
+          void-icon-class="icon-rate-face-off"
+          :colors="['#99A9BF', '#F7BA2A', '#FF9900']">
+        </el-rate>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="3">态度</el-col>
+      <el-col :span="21">
+        <el-rate
+          v-model="addVoteForm.ability_2"
+          :icon-classes="iconClasses"
+          :max="10"
+          show-score
+          void-icon-class="icon-rate-face-off"
+          :colors="['#99A9BF', '#F7BA2A', '#FF9900']">
+        </el-rate>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="3">领导力</el-col>
+      <el-col :span="21">
+        <el-rate
+          v-model="addVoteForm.ability_3"
+          :icon-classes="iconClasses"
+          :max="10"
+          show-score
+          void-icon-class="icon-rate-face-off"
+          :colors="['#99A9BF', '#F7BA2A', '#FF9900']">
+        </el-rate>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col><el-button type="primary" style="width:100%;" size="small" @click="addVote()">投票</el-button></el-col>
+    </el-row>
+  </el-dialog>
 </div>
 </template>
 
 <script>
+import '@/assets/fonts/style.css'
 import qs from 'qs'
 import {getNotVote, getVote, addVote} from '../../api/login/vote'
 import {Message} from 'element-ui'
@@ -257,17 +253,16 @@ export default {
         'userId': '',
         'managerId': '',
         'deptName': '',
-        'ability_1': 10,
-        'ability_2': 10,
-        'ability_3': 10
-      }
+        'ability_1': 5,
+        'ability_2': 5,
+        'ability_3': 5
+      },
+      iconClasses: ['icon-rate-face-1', 'icon-rate-face-2', 'icon-rate-face-3']
     }
   },
   mounted () {
-    if (this.$store.state.Login.hasData) {
-      // this.realName = this.$store.state.Login.realName
-      this.userId = this.$store.state.Login.userId
-    }
+    let loginData = JSON.parse(sessionStorage.getItem('loginData'))
+    this.userId = loginData.userId
     this.getCurrentSeason() // 页面刷新获取当前季度
   },
   methods: {
@@ -278,10 +273,10 @@ export default {
       this.current = val
     },
     handleSizeChange_1 (val) {
-      this.size = val
+      this.size_1 = val
     },
     handleCurrentChange_1 (val) {
-      this.current = val
+      this.current_1 = val
     },
     getCurrentSeason () {
       let today = new Date() // 获取当前时间
@@ -427,5 +422,11 @@ export default {
   margin-left: -10px;
   font-weight: bold;
   color: #FFFFFF;
+}
+/deep/ .el-rate{
+  margin-left: 20px;
+}
+/deep/ .el-rate__icon{
+  font-size: 20px;
 }
 </style>

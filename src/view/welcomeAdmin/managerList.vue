@@ -7,15 +7,15 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-table :data="managerData" style="width: 100%" stripe highlight-current-row :header-cell-style="{
+      <el-table :data="managerData.slice((current-1)*size,current*size)" style="width: 100%" height="550" stripe highlight-current-row :header-cell-style="{
                 'background-color': '#f0f8ff',
-                'height': '35px',
+                'height': '40px',
                 'padding':'0',
                 'border': 'none',
                 'font-size':'0.9vw',
                 'color':'#666666',
                 'text-align':'center'
-            }" :cell-style="{padding:'0px',height: '25px','text-align':'center'} ">
+            }" :cell-style="{padding:'0px',height: '50px','text-align':'center'} ">
         <el-table-column prop="manager_id" label="编号" width="100"></el-table-column>
         <el-table-column prop="manager_name" label="姓名" width="120"></el-table-column>
         <el-table-column prop="dept_name" label="主管部门" width="120"></el-table-column>
@@ -52,6 +52,9 @@
             <i class="el-icon-edit" @click="editManager(scope.row)"></i>
           </template>
         </el-table-column>
+        <template slot="empty">
+          <el-empty :image-size="60"></el-empty>
+        </template>
       </el-table>
     </el-row>
     <el-row :span='24'><div class="pagination">
@@ -140,9 +143,10 @@ export default {
   data () {
     return {
       managerData: [],
-      current: 0,
+      current: 1,
       total: 0,
       size: 10,
+      currentLeader: '',
       dialogFormVisible: false,
       dialogFormVisible1: false,
       selectedDeptId: '',
@@ -211,11 +215,11 @@ export default {
         }
         addManager(qs.stringify(params)).then(res => {
           if (res.data.code === 200) {
-            alert(res.data.message)
+            Message.success(res.data.message)
             this.dialogFormVisible = false
             this.loadData()
           } else {
-            alert(res.data.message)
+            Message.error(res.data.message)
             this.dialogFormVisible = false
           }
         }).catch(function (error) { console.log('addManager error') })
@@ -233,10 +237,10 @@ export default {
         }
         delManager(qs.stringify(params)).then(res => {
           if (res.data.code === 200) {
+            Message.success(res.data.message)
             this.loadData()
-            alert(res.data.message)
           } else {
-            alert(res.data.message)
+            Message.error(res.data.message)
           }
         }).catch(function (error) { console.log('delDept error') })
       })
@@ -263,6 +267,7 @@ export default {
       this.dialogFormVisible1 = true
       this.editManagerForm.currentManage = data.manager_name
       this.editManagerForm.managerName = data.manager_name
+      this.currentLeader = data.manager_name
       this.editManagerForm.currentDept = data.dept_name
       this.editManagerForm.currentDeptId = data.dept_id
       this.editManagerForm.selectedManagerId = data.manager_id
@@ -285,6 +290,8 @@ export default {
     edit () {
       if (this.editManagerForm.managerName === '') {
         Message.error('请选择要更换的经理')
+      } else if (this.editManagerForm.managerName === this.currentLeader) {
+        Message.warning('未更改经理')
       } else {
         this.$confirm('更换经理后，原部门经理的绩效信息会从数据库删除', '提示', {
           confirmButtonText: '确定',
@@ -298,10 +305,10 @@ export default {
           }
           editManager(qs.stringify(params)).then(res => {
             if (res.data.code === 200) {
-              alert(res.data.message)
+              Message.success(res.data.message)
               this.loadData()
             } else {
-              alert(res.data.message)
+              Message.error(res.data.message)
             }
             this.dialogFormVisible1 = false
           }).catch(function (error) { console.log('editManager error') })

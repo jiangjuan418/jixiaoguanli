@@ -1,7 +1,8 @@
 <template>
   <div class="navbar">
     <div class="logo" id="logo_admin"></div>
-    <div class="placeholder"></div>
+    <div class="placeholder">
+    </div>
     <div class='navlist'>
       <el-menu  :default-active="activeIndex" mode="horizontal" @select="changeIndex"  router><!--存在问题：页面刷新，路径没刷新-->
         <el-menu-item index="/welcomeAdmin/deptList"><span>部门列表</span></el-menu-item>
@@ -23,7 +24,9 @@ export default {
   data () {
     return {
       activeIndex: '/welcomeAdmin/deptList',
-      realName: ''
+      realName: '',
+      dialogFormVisible: false,
+      fileList: []
     }
   },
   mounted: function () {
@@ -48,6 +51,9 @@ export default {
       }).then(() => {
         this.$router.push({path: '/login'})
       })
+    },
+    showDialog () {
+      this.dialogFormVisible = true
     }
   }
 }
@@ -121,6 +127,7 @@ export default {
   font-weight: bolder;
 }
 .navlist .el-menu>.el-menu-item span{
+  font-family: "Calibri Light";
   font-weight: 500;
 }
 .navlist .el-menu>.el-menu-item.is-active {

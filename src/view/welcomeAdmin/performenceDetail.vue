@@ -91,13 +91,13 @@
       :default-sort = "{prop: 'date', order: 'descending'}"
       stripe highlight-current-row :header-cell-style="{
                 'background-color': '#f0f8ff',
-                'height': '35px',
+                'height': '40px',
                 'padding':'0',
                 'border': '1px solid #E2F0FAFF',
                 'font-size':'0.9vw',
                 'color':'#666666',
                 'text-align':'center'
-            }" :cell-style="{padding:'0px',height: '25px','text-align':'center'} "
+            }" :cell-style="{padding:'0px',height: '50px','text-align':'center'} "
     >
       <el-table-column prop="dept_id" label="部门编号" v-if="false"></el-table-column>
       <el-table-column prop="realName" label="评分人" width="180">
@@ -114,7 +114,16 @@
         <el-table-column prop="ability_3" label="领导力" sortable></el-table-column>
         <el-table-column prop="grade" label="平均得分"></el-table-column>
       </el-table-column>
-<!--      <el-table-column prop="grade" label="总得分"></el-table-column>-->
+      <el-table-column prop="total_grade" label="综合得分">
+        <template slot-scope="scope">
+          <span slot="reference" v-if="Number.parseFloat(scope.row.total_grade) < 6" style="color: red">{{ scope.row.total_grade }}</span>
+          <span slot="reference" v-else-if="Number.parseFloat(scope.row.total_grade) > 9" style="color: greenyellow">{{ scope.row.total_grade }}</span>
+          <span slot="reference"  v-else>{{ scope.row.total_grade }}</span>
+        </template>
+      </el-table-column>
+      <template slot="empty">
+        <el-empty :image-size="60"></el-empty>
+      </template>
     </el-table>
   </el-row>
   <el-row :span='24'><div class="pagination">
@@ -168,12 +177,12 @@ export default {
         this.loadData()
       }
     },
-    selectedSeason: {
+    selectedSeason: { // 监听selectedSeason,selectedSeason值改变，则展示的部门详情随季节改变
       handler (newValue, oldValue) {
         this.loadData()
       }
     },
-    search: {
+    search: { // 监听search值，实现根据员工名字搜索绩效信息的功能
       handler (newValue, oldValue) {
         this.performenceDetailData = this.performenceDetailData_
         this.searchUser(newValue)
@@ -187,13 +196,13 @@ export default {
     handleCurrentChange (val) {
       this.current = val
     },
-    searchUser (name) {
+    searchUser (name) { // 根据员工名称搜索绩效打分信息
       let search = name
       let searchData = []
       if (search) {
         for (let i = 0; i < this.performenceDetailData.length; i++) {
-          if (search === this.performenceDetailData[i].realName) {
-            console.log(this.performenceDetailData[i].realName)
+          // console.log(this.performenceDetailData[i].realName.indexOf(search))
+          if (this.performenceDetailData[i].realName.indexOf(search) >= 0) { // 模糊匹配
             searchData.push(this.performenceDetailData[i])
             this.total = 1
             break
@@ -205,7 +214,7 @@ export default {
       this.performenceDetailData = searchData
       this.total = this.performenceDetailData.length
     },
-    getCurrentSeason () {
+    getCurrentSeason () { // 获取当前季度
       let today = new Date() // 获取当前时间
       let year = today.getFullYear()
       let month = today.getMonth() + 1// getMonth返回0-11
@@ -225,12 +234,12 @@ export default {
     next () {
       this.year = this.year + 1
     },
-    selectSeason (i) {
+    selectSeason (i) { // 季度选择器
       this.season = i + 1
       this.showSeason = false
       this.selectedSeason = `${this.year}年第${this.season}季度`
     },
-    loadDeptList () {
+    loadDeptList () { // 加载现存部门名称
       getDeptList().then(res => {
         this.deptOption = []
         if (res.data.code === 200) {
@@ -241,7 +250,7 @@ export default {
         this.deptId = this.deptOption[0].value
       }).catch(function (error) { console.log('getDeptList error') })
     },
-    loadData () {
+    loadData () { // 加载绩效信息
       if (this.dept_id === '' || this.selectedSeason === '') {
         Message.error('请要查看的选择部门和季度！')
       } else {
